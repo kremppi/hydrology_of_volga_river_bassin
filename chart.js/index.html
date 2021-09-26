@@ -1,0 +1,72 @@
+<<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Chart bars</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  </head>
+  <body>
+    <canvas id="chart" width="800" height="400"></canvas>
+    <script>
+      const xlabels = [];
+      const ytemps = [];
+
+      chartIt();
+
+      async function chartIt() {
+        await getData()
+        const ctx = document.getElementById('chart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: xlabels,
+                datasets: [{
+                    label: 'Global average temperatures',
+                    data: ytemps,
+                    fill: false,
+                    backgroundColor: 'rgba(255, 0, 0, 0.0)',
+                    borderColor: 'rgba(0, 0, 132, 1)',
+                    borderWidth: 1,
+                    pointRadius : 0
+                }
+                ]
+            },
+            options: {
+              title: {
+                display: true,
+                text: 'Volga level in Astrakhan city',
+                fontSize: 25
+              },
+              legend:{
+                display: false,
+              },
+              scales: {
+                    y: {
+                        beginAtZero: false,
+                    }
+              }
+            }
+        });
+      }
+
+      async function getData() {
+      const response = await fetch('volga_level.csv');
+      const data = await response.text();
+
+      const table = data.split('\n').slice(1);
+      table.forEach(row => {
+        const columns = row.split(',');
+        const year = columns[0];
+        xlabels.push(year);
+        const temp = columns[1];
+        ytemps.push(parseFloat(temp) + 14);
+        console.log(year, temp);
+      });
+
+
+    }
+
+    </script>
+  </body>
+</html>
